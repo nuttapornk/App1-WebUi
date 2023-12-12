@@ -1,7 +1,7 @@
 name: action 2
 
 on:
-    workflow_dispatch:
+    workflow_call:
         inputs:
             print_tags:
                 required: true
