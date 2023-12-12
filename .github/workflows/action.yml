@@ -22,8 +22,9 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
   
   print_tags:
+    name: print tags
     needs: workflow_call_build
     uses: ./.github/workflows/action2.yml
     with:
-      build_type: 'nonprod'
+      build_type: 'prod'
       tags: 'test1234'
