@@ -1,20 +1,25 @@
 name: action 2
 
 on:
-    workflow_call:
-        inputs:
-            print_tags:
-                required: true
-                type: boolean
-            tags:
-                required: true
-                type: string
+  workflow_call:
+    inputs:
+      build_type:
+        required: true
+        type: string
+      tags:
+        required: true
+        type: string
+
 jobs:
-    print-tag:
-        runs-on: ubuntu-latest
-        if: ${{inputs.print_tags}}
-        steps:
-            - name: Print the input tag to STDOUT
-              run: echo The tags are ${{inputs.tags}}
+  print-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: is nonprod        
+        if: ${{ inputs.build_type == 'nonprod' }}
+        run: echo "The tags are nonprod:${{inputs.tags}}"
+            
+      - name: is prod
+        if: ${{ inputs.build_type == 'prod' }}
+        run: echo The tags are prod:${{inputs.tags}}
             
 
