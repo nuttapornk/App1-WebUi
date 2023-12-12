@@ -25,5 +25,5 @@ jobs:
     needs: workflow_call_build
     uses: ./.github/workflows/action2.yml
     with:
-      print_tags: true
+      print_tags: false
       tags: 'test1234'
