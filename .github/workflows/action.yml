@@ -20,3 +20,10 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  
+  print_tags:
+    needs: workflow_call_build
+    uses: ./.github/workflows/action2.yml
+    with:
+      print_tags: true
+      tags: 'test1234'
