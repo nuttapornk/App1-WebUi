@@ -17,7 +17,7 @@ jobs:
       - name: set env image name
         run: |-
           echo "DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_ENV;
-          echo "DOCKER_IMAGE=app1-webapi" >> $GITHUB_ENV;
+          echo "DOCKER_IMAGE=app1-webui" >> $GITHUB_ENV;
       
       - name: automated version bump
         id: versioning
