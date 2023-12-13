@@ -70,7 +70,7 @@ jobs:
         id: imagename_output
         run: echo "image_name=${{ env.DOCKER_IMAGE }}:${{ env.TAG }}" >> "$GITHUB_OUTPUT"
       
-      outputs:
-        image_name: ${{ steps.imagename_output.outputs.image_name }}
-        tag_version: ${{ env.TAG }}
-        build_type: "nonprod"
+    outputs:
+      image_name: ${{ steps.imagename_output.outputs.image_name }}
+      tag_version: ${{ env.TAG }}
+      build_type: "nonprod"
