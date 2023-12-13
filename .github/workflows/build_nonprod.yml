@@ -33,14 +33,44 @@ jobs:
           default: prerelease
           commit-message: 'CI: bumps version to {{version}} [skip ci]'
 
-      # - name: image build with kaniko
-      #   if: env.TAG != ''
-      #   uses: aevea/action-kaniko@master
-      #   with:
-      #     image: ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}
-      #     tag: ${{ env.TAG }}
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      #     cache: false
-      #     cache_registry: ${{ env.DOCKER_USERNAME }}/cache         
+      - name: set env tag
+        env: 
+          NEW_TAG: ${{ steps.versioning.outputs.newTag }} 
+        run: |
+            echo "curent build tag/release is $NEW_TAG"
+            echo ${{ steps.versioning.outputs.newTag }}
+            echo "TAG=$(echo ${{ steps.versioning.outputs.newTag }} | sed 's/v//')" >> $GITHUB_ENV;
 
+      - name: image build with kaniko
+        if: env.TAG != ''
+        uses: aevea/action-kaniko@master
+        with:
+          image: ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}
+          tag: ${{ env.TAG }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          cache: false
+          cache_registry: ${{ env.DOCKER_USERNAME }}/cache
+
+      - name: trivy vulnerability scanner
+        if: env.TAG != ''      
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ env.TAG }}'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+        env:
+          TRIVY_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: set output imagename
+        id: imagename_output
+        run: echo "image_name=${{ env.DOCKER_IMAGE }}:${{ env.TAG }}" >> "$GITHUB_OUTPUT"
+      
+      outputs:
+        image_name: ${{ steps.imagename_output.outputs.image_name }}
+        tag_version: ${{ env.TAG }}
+        build_type: "nonprod"
