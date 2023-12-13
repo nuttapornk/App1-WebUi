@@ -1,0 +1,46 @@
+name: build nonprod
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build_nonprod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: set env image name
+        run: |-
+          echo "DOCKER_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_ENV;
+          echo "DOCKER_IMAGE=app1-webapi" >> $GITHUB_ENV;
+      
+      - name: automated version bump
+        id: versioning
+        uses:  'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag-prefix: 'v1.'
+          major-wording:  'MAJOR,major'
+          minor-wording:  'MINOR,minor'
+          patch-wording:  'PATCH,patch'
+          rc-wording:     'pre-dev,pre-sit,pre-uat,pre-preprod'
+          default: prerelease
+          commit-message: 'CI: bumps version to {{version}} [skip ci]'
+
+      # - name: image build with kaniko
+      #   if: env.TAG != ''
+      #   uses: aevea/action-kaniko@master
+      #   with:
+      #     image: ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}
+      #     tag: ${{ env.TAG }}
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      #     cache: false
+      #     cache_registry: ${{ env.DOCKER_USERNAME }}/cache         
+
