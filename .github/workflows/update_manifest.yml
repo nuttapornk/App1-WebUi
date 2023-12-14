@@ -69,12 +69,12 @@ jobs:
           kustomize edit set image ${{ env.DOCKER_IMAGE }}
           cat kustomization.yml
 
-      - name: push update manifesh to database repository
+      - name: push update manifesh to repository
         if: ${{ inputs.imagename != '' }}
         run: |
           echo "REPO_NAME=${{ inputs.repository }}"
           ls
-          git config user.name "nuttaporn[bot]"
+          git config user.name "nuttaporn kunsin"
           git config user.email "to_andata@hotmail.com"
           git add .
           git commit -m "update manifest ${{ env.DOCKER_IMAGE }}"
