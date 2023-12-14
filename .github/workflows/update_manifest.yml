@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: set env image name
         run: |-
-          echo "DOCKER_IMAGE=insuranceitteam/${{ inputs.imagename }}" >> $GITHUB_ENV;
+          echo "DOCKER_IMAGE=nuttaporn1449/${{ inputs.imagename }}" >> $GITHUB_ENV;
 
       - name: setup env nonprod
         if: ${{ inputs.build_type == 'nonprod' }}
