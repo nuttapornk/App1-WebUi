@@ -87,4 +87,4 @@ jobs:
       tag_version: ${{ needs.build_nonprod.outputs.tag_version }}
       build_type: ${{ needs.build_nonprod.outputs.build_type }}
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      my_pat: ${{ secrets.MY_PAT }}
