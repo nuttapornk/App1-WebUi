@@ -21,7 +21,9 @@ on:
         type: string
     secrets:
       token:
-        required: true
+        required: true        
+permissions:
+  contents: write          
 jobs:
   update_database_version:
     runs-on: ubuntu-latest
