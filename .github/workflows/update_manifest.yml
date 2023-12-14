@@ -67,7 +67,7 @@ jobs:
           cd src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}
           echo "kustomize update src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}"
           kustomize edit set image ${{ env.DOCKER_IMAGE }}
-          cat kustomization.yaml
+          cat kustomization.yml
 
       - name: push update manifesh to database repository
         if: ${{ inputs.imagename != '' }}
