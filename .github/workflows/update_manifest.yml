@@ -1,0 +1,81 @@
+name: update manifest
+
+on:
+  workflow_call:
+    inputs:
+      imagename:
+        required: true
+        type: string
+      tag_version:
+        required: true
+        type: string
+      build_type:
+        required: true
+        type: string
+        default: "nonprod"
+      repository:
+        required: true
+        type: string
+      domain_name:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+jobs:
+  update_database_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: set env image name
+        run: |-
+          echo "DOCKER_IMAGE=insuranceitteam/${{ inputs.imagename }}" >> $GITHUB_ENV;
+
+      - name: setup env nonprod
+        if: ${{ inputs.build_type == 'nonprod' }}
+        run: |-
+          echo "ENVDIR=$(echo "${{ inputs.tag_version }}" | sed 's/.*-\(.*\)\..*/\1/')" >> $GITHUB_ENV
+
+      - name: setup env prod
+        if: ${{ inputs.build_type == 'prod' }}
+        run: |-
+          echo "ENVDIR=$(echo "${{ inputs.tag_version }}" | sed 's/.*-\(.*\)\..*/\1/')" >> $GITHUB_ENV
+
+      - name: checkout env nonprod
+        if: ${{ inputs.build_type == 'nonprod' }}
+        uses: actions/checkout@v3
+        with:
+          repository: "${{inputs.repository}}"
+          ref: "dev"
+          token: ${{ secrets.token }}
+
+      - name: checkout env prod
+        if: ${{ inputs.build_type == 'prod' }}
+        uses: actions/checkout@v3
+        with:
+          repository: "${{inputs.repository}}"
+          ref: "master"
+          token: ${{ secrets.token }}
+
+      - name: install kustomization
+        uses: imranismail/setup-kustomize@v2
+
+      - name: patch kustomize
+        if: ${{ inputs.imagename != '' }}
+        run: |-
+          ls -la src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}/kustomization.yml                    
+          cd src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}
+          echo "kustomize update src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}"
+          kustomize edit set image ${{ env.DOCKER_IMAGE }}
+          cat kustomization.yaml
+
+      - name: push update manifesh to database repository
+        if: ${{ inputs.imagename != '' }}
+        run: |
+          echo "REPO_NAME=${{ inputs.repository }}"
+          ls
+          git config user.name "nuttaporn[bot]"
+          git config user.email "to_andata@hotmail.com"
+          git add .
+          git commit -m "update manifest ${{ env.DOCKER_IMAGE }}"
+          git push

@@ -74,3 +74,15 @@ jobs:
       image_name: ${{ steps.imagename_output.outputs.image_name }}
       tag_version: ${{ env.TAG }}
       build_type: "nonprod"
+
+  update_manifest:
+    needs: build_nonprod
+    uses: ./.github/workflows/update_manifest.yml
+    with:
+      imagename: ${{ needs.build_nonprod.outputs.image_name }}
+      repository: nuttaporn1449/app1-webui
+      domain_name: app1-webui
+      tag_version: ${{ needs.build_nonprod.outputs.tag_version }}
+      build_type: ${{ needs.build_nonprod.outputs.build_type }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
