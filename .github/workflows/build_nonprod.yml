@@ -80,7 +80,7 @@ jobs:
     uses: ./.github/workflows/update_manifest.yml
     with:
       imagename: ${{ needs.build_nonprod.outputs.image_name }}
-      repository: nuttaporn1449/app1-deployment
+      repository: nuttapornk/app1-deployment
       domain_name: app1-webui
       tag_version: ${{ needs.build_nonprod.outputs.tag_version }}
       build_type: ${{ needs.build_nonprod.outputs.build_type }}
