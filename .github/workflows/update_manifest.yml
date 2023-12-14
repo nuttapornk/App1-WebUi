@@ -75,7 +75,7 @@ jobs:
       - name: push update manifesh to repository
         if: ${{ inputs.imagename != '' }}
         run: |
-          echo "REPO_NAME=https://github.com/${{ inputs.repository }}" >> $GITHUB_ENV
+          echo "REPO_NAME=${{ inputs.repository }}" >> $GITHUB_ENV
           ls
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
