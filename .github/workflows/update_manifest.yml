@@ -22,7 +22,6 @@ on:
     secrets:
       token:
         required: true        
-permissions: write-all      
 jobs:
   update_database_version:
     runs-on: ubuntu-latest
