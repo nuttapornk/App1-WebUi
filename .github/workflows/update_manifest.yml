@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: set env image name
         run: |-
-          echo "DOCKER_IMAGE=nuttaporn1449/${{ inputs.imagename }}" >> $GITHUB_ENV;
+          echo "DOCKER_IMAGE=nuttaporn1449/${{ inputs.imagename }}" >> $GITHUB_ENV;          
 
       - name: setup env nonprod
         if: ${{ inputs.build_type == 'nonprod' }}
@@ -75,7 +75,7 @@ jobs:
       - name: push update manifesh to repository
         if: ${{ inputs.imagename != '' }}
         run: |
-          echo "REPO_NAME=${{ inputs.repository }}"
+          echo "REPO_NAME=https://github.com/${{ inputs.repository }}" >> $GITHUB_ENV
           ls
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -88,4 +88,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: dev
+          repository: ${{ env.REPO_NAME }}
+          branch: ${{ github.ref }}
