@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - dev
+permissions:
+      contents: write
+      packages: write
+
+jobs:
+  workflow_call_build:
+    uses: ./.github/workflows/build.yml
+    with:
+      repository: ${{ github.repository }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update_manifest:
+    needs: workflow_call_build
+    uses: ./.github/workflows/update_manifest.yml
+    with:
+      imagename: ${{ needs.workflow_call_build.outputs.imgname }}
+      repository: nuttapornk/App1-Deployment
+      app_name: app1-webui      
+    secrets:
+      my_pat: ${{ secrets.MY_PAT }}
+  

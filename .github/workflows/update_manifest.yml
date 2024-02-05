@@ -1,4 +1,4 @@
-name: update manifest
+name: update_manifest
 
 on:
   workflow_call:
@@ -6,74 +6,66 @@ on:
       imagename:
         required: true
         type: string
-      tag_version:
-        required: true
-        type: string
-      build_type:
-        required: true
-        type: string
-        default: "nonprod"
       repository:
         required: true
         type: string
-      domain_name:
+      app_name:
         required: true
         type: string
     secrets:
       my_pat:
-        required: true      
-permissions:
-      contents: write
-      packages: write  
+        required: true
+
 jobs:
-  update_database_version:
+  update_tag:
     runs-on: ubuntu-latest
-
     steps:
-      - name: set env image name
-        run: |-
-          echo "DOCKER_IMAGE=nuttaporn1449/${{ inputs.imagename }}" >> $GITHUB_ENV;          
-
-      - name: setup env nonprod
-        if: ${{ inputs.build_type == 'nonprod' }}
-        run: |-
-          echo "ENVDIR=$(echo "${{ inputs.tag_version }}" | sed 's/.*-\(.*\)\..*/\1/')" >> $GITHUB_ENV
-
-      - name: setup env prod
-        if: ${{ inputs.build_type == 'prod' }}
-        run: |-
-          echo "ENVDIR=$(echo "${{ inputs.tag_version }}" | sed 's/.*-\(.*\)\..*/\1/')" >> $GITHUB_ENV
-
-      - name: checkout env nonprod
-        if: ${{ inputs.build_type == 'nonprod' }}
+      - name: checkout
         uses: actions/checkout@v3
         with:
           repository: "${{inputs.repository}}"
-          ref: "dev"
+          ref: "nonprod"
           token: ${{ secrets.my_pat }}
-
-      - name: checkout env prod
-        if: ${{ inputs.build_type == 'prod' }}
-        uses: actions/checkout@v3
-        with:
-          repository: "${{inputs.repository}}"
-          ref: "main"
-          token: ${{ secrets.my_pat }}
-
-      - name: install kustomization
-        uses: imranismail/setup-kustomize@v2
-
-      - name: patch kustomize
-        if: ${{ inputs.imagename != '' }}
+      - name: Set variable
         run: |-
-          ls -la src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}/kustomization.yml                    
-          cd src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}
-          echo "kustomize update src/microservices/onprem/${{ inputs.domain_name }}/env/${{ env.ENVDIR }}"
+          echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+      - name: Is dev?
+        if: env.BRANCH == 'dev'
+        run: echo "DIR=dev" >> $GITHUB_ENV;
+      - name: Is develop?
+        if: env.BRANCH == 'develop'
+        run: echo "DIR=dev" >> $GITHUB_ENV;
+      - name: Is sit?
+        if: env.BRANCH == 'sit'
+        run: echo "DIR=sit" >> $GITHUB_ENV;
+      - name: Is uat?
+        if: env.BRANCH == 'uat'
+        run: echo "DIR=uat" >> $GITHUB_ENV;
+      - name: Is preprod?
+        if: env.BRANCH == 'preprod'
+        run: echo "DIR=preprod" >> $GITHUB_ENV;
+      - name: Is main?
+        if: env.BRANCH == 'main'
+        run: echo "DIR=production" >> $GITHUB_ENV;
+      - name: Is master?
+        if: env.BRANCH == 'master'
+        run: echo "DIR=production" >> $GITHUB_ENV;
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v1
+      - name: Set Tag
+        run: |
+          echo "TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
+          echo ${{ inputs.imagename }};
+
+      - name: Patch kustomize
+        run: |-
+          ls -la src/microservices/onprem/${{ inputs.app_name }}/env/${{ env.DIR }}
+          cd src/microservices/onprem/${{ inputs.app_name }}/env/${{ env.DIR }}
+          echo "kustomize update src/microservices/onprem/${{ inputs.app_name }}/env/${{ env.DIR }}"          
           kustomize edit set image ${{ env.DOCKER_IMAGE }}
-          cat kustomization.yml
+          cat kustomization.yaml
 
-      - name: push update manifesh to repository
-        if: ${{ inputs.imagename != '' }}
+      - name: Push update manifest to deployment repo
         run: |
           echo "REPO_NAME=${{ inputs.repository }}" >> $GITHUB_ENV
           ls
@@ -81,4 +73,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "update manifest ${{ env.DOCKER_IMAGE }}"
-          git push        
+          git push    
