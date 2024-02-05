@@ -58,8 +58,10 @@ jobs:
       - name: Is master?
         if: env.BRANCH == 'master'
         run: echo "DIR=production" >> $GITHUB_ENV;
+
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v1
+        
       - name: Set Tag
         run: |
           echo "TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
@@ -70,7 +72,7 @@ jobs:
           ls -la src/microservices/onprem/${{ inputs.domain_name }}/${{ env.DIR }}
           cd src/microservices/onprem/${{ inputs.domain_name }}/${{ env.DIR }}
           echo "kustomize update src/microservices/onprem/${{ inputs.domain_name }}/${{ env.DIR }}"          
-          kustomize edit set image ${{ inputs.imagename }}
+          kustomize edit set image nuttaporn1449/${{ inputs.imagename }}
           cat kustomization.yml
 
       - name: Push update manifest to deployment repo

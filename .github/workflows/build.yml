@@ -70,7 +70,7 @@ jobs:
         run: echo "=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
 
       - id: step1
-        run: echo "::set-output name=imagename::${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY }}:${{ env.TAG }}"
+        run: echo "::set-output name=imagename::${{ env.REPOSITORY }}:${{ env.TAG }}"
         
       - name: Kaniko build
         uses: aevea/action-kaniko@master
