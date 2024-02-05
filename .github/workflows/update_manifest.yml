@@ -8,7 +8,10 @@ on:
         type: string
       repository:
         required: true
-        type: string      
+        type: string    
+      domain_name:
+        required: true
+        type: string     
     secrets:
       my_pat:
         required: true
@@ -23,12 +26,6 @@ jobs:
           repository: "${{inputs.repository}}"
           ref: "dev"
           token: ${{ secrets.my_pat }}
-
-      - name: Set variable
-        run: |-
-          APP_PATH=$(echo "${{ inputs.imagename }}" | cut -d':' -f1)
-          echo "APP_PATH=$APP_PATH" >> $GITHUB_ENV
-          echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV;
 
       - name: Is dev?
         if: env.BRANCH == 'dev'
@@ -66,9 +63,9 @@ jobs:
 
       - name: Patch kustomize
         run: |-
-          ls -la src/microservices/onprem/${{ env.APP_PATH }}/${{ env.DIR }}
-          cd src/microservices/onprem/${{ env.APP_PATH }}/${{ env.DIR }}
-          echo "kustomize update src/microservices/onprem/${{ env.APP_PATH }}/${{ env.DIR }}"          
+          ls -la src/microservices/onprem/${{ inputs.domain_name }}/${{ env.DIR }}
+          cd src/microservices/onprem/${{ inputs.domain_name }}/${{ env.DIR }}
+          echo "kustomize update src/microservices/onprem/${{ inputs.domain_name }}/${{ env.DIR }}"          
           kustomize edit set image ${{ inputs.imagename }}
           cat kustomization.yml
 
