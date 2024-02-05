@@ -19,7 +19,7 @@ jobs:
     needs: workflow_call_build
     uses: ./.github/workflows/update_manifest.yml
     with:
-      imagename: ${{ needs.workflow_call_build.outputs.imgname }}
+      imagename: ${{ needs.workflow_call_build.outputs.imagename }}
       repository: nuttapornk/app1-deployment           
     secrets:
       my_pat: ${{ secrets.MY_PAT }}

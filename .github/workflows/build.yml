@@ -13,14 +13,14 @@ on:
       DOCKERHUB_PASSWORD:
         required: true
     outputs:
-      imgname:
-        value: ${{ jobs.build.output.output1 }}      
+      imagename:
+        value: ${{ jobs.build.outputs.output1 }}      
 
 jobs:
-  build_nonprod:
+  build:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.step1.outputs.imgname }}      
+      output1: ${{ steps.step1.outputs.imagename }}      
     steps:
       - uses: actions/checkout@v3
         with:
