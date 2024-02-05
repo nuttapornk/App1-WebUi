@@ -78,8 +78,8 @@ jobs:
           tag: ${{ env.TAG }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          cache: true
-          cache_registry: nuttapornk/cache
+          cache: false
+          cache_registry: ${{ secrets.DOCKERHUB_USERNAME }}/cache
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
