@@ -28,7 +28,7 @@ jobs:
       
       - name: Set env name
         run: |-
-          LOWER_CASE_REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+          LOWER_CASE_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')
           echo "REPOSITORY=$LOWER_CASE_REPO_NAME" >> $GITHUB_ENV;
       
       - name: Set version
