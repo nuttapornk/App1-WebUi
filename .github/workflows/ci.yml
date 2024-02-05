@@ -5,14 +5,12 @@ on:
     branches:
       - dev
 permissions:
-      contents: write
-      packages: write
+  contents: write
+  packages: write
 
 jobs:
   workflow_call_build:
     uses: ./.github/workflows/build.yml
-    with:
-      repository: ${{ github.repository }}
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}      
@@ -22,8 +20,6 @@ jobs:
     uses: ./.github/workflows/update_manifest.yml
     with:
       imagename: ${{ needs.workflow_call_build.outputs.imgname }}
-      repository: nuttapornk/App1-Deployment
-      app_name: app1-webui      
+      repository: nuttapornk/app1-deployment           
     secrets:
       my_pat: ${{ secrets.MY_PAT }}
-  

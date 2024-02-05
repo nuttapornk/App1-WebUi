@@ -7,9 +7,6 @@ on:
         required: false
         default: docker
         type: string
-      repository:
-        required: true
-        type: string
     secrets:
       DOCKERHUB_USERNAME:
         required: true
@@ -17,10 +14,7 @@ on:
         required: true
     outputs:
       imgname:
-        value: ${{ jobs.build.output.output1 }}
-permissions:
-      contents: write
-      packages: write        
+        value: ${{ jobs.build.output.output1 }}      
 
 jobs:
   build_nonprod:
@@ -31,6 +25,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      
+      - name: Set env name
+        run: |-
+          LOWER_CASE_REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')
+          echo "REPOSITORY=$LOWER_CASE_REPO_NAME" >> $GITHUB_ENV;
       
       - name: Set version
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'    
@@ -69,12 +68,12 @@ jobs:
       - if: env.TAG == 'v'
         run: echo "=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
       - id: step1
-        run: echo "::set-output name=imgname::${{ inputs.repository }}:${{ env.TAG }}"
+        run: echo "::set-output name=imgname::${{ env.REPOSITORY }}:${{ env.TAG }}"
         
       - name: Kaniko build
         uses: aevea/action-kaniko@master
         with:
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/app1-webui 
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY }} 
           tag: ${{ env.TAG }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -84,7 +83,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ inputs.repository }}:${{ env.TAG }}'
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY }}:${{ env.TAG }}'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true

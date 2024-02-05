@@ -9,9 +9,6 @@ on:
       repository:
         required: true
         type: string
-      app_name:
-        required: true
-        type: string
     secrets:
       my_pat:
         required: true
@@ -59,18 +56,18 @@ jobs:
 
       - name: Patch kustomize
         run: |-
-          ls -la src/microservices/onprem/${{ inputs.app_name }}/env/${{ env.DIR }}
-          cd src/microservices/onprem/${{ inputs.app_name }}/env/${{ env.DIR }}
-          echo "kustomize update src/microservices/onprem/${{ inputs.app_name }}/env/${{ env.DIR }}"          
-          kustomize edit set image ${{ env.DOCKER_IMAGE }}
+          ls -la src/microservices/onprem/${{ inputs.imagename }}/${{ env.DIR }}
+          cd src/microservices/onprem/${{ inputs.imagename }}/${{ env.DIR }}
+          echo "kustomize update src/microservices/onprem/${{ inputs.imagename }}/${{ env.DIR }}"          
+          kustomize edit set image ${{ inputs.imagename }}
           cat kustomization.yaml
 
       - name: Push update manifest to deployment repo
         run: |
-          echo "REPO_NAME=${{ inputs.repository }}" >> $GITHUB_ENV
+          echo "REPO_NAME=${{ inputs.imagename }}" >> $GITHUB_ENV
           ls
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "update manifest ${{ env.DOCKER_IMAGE }}"
+          git commit -m "update manifest"
           git push    
