@@ -18,6 +18,9 @@ on:
     outputs:
       imgname:
         value: ${{ jobs.build.output.output1 }}
+permissions:
+      contents: write
+      packages: write        
 
 jobs:
   build_nonprod:
@@ -76,7 +79,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           cache: true
-          cache_registry: ${{ github.repository_owner }}/cache
+          cache_registry: nuttapornk/cache
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
