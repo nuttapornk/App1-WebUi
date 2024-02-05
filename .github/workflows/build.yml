@@ -15,8 +15,6 @@ on:
         required: true
       DOCKERHUB_PASSWORD:
         required: true
-      GITHUB_TOKEN:
-        required: true
     outputs:
       imgname:
         value: ${{ jobs.build.output.output1 }}
