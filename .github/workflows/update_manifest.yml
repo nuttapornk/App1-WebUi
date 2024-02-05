@@ -8,10 +8,10 @@ on:
         type: string
       repository:
         required: true
-        type: string    
+        type: string
       domain_name:
         required: true
-        type: string     
+        type: string              
     secrets:
       my_pat:
         required: true
@@ -26,6 +26,10 @@ jobs:
           repository: "${{inputs.repository}}"
           ref: "dev"
           token: ${{ secrets.my_pat }}
+
+      - name: Set variable
+        run: |-
+          echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV;
 
       - name: Is dev?
         if: env.BRANCH == 'dev'
