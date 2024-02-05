@@ -65,10 +65,12 @@ jobs:
 
       - if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main'
         run: echo "TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
+
       - if: env.TAG == 'v'
         run: echo "=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
+        
       - id: step1
-        run: echo "::set-output name=imgname::${{ env.REPOSITORY }}:${{ env.TAG }}"
+        run: echo "::set-output name=imagename::${{ env.REPOSITORY }}:${{ env.TAG }}"
         
       - name: Kaniko build
         uses: aevea/action-kaniko@master
