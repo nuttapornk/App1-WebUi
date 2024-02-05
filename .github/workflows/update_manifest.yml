@@ -23,9 +23,10 @@ jobs:
           repository: "${{inputs.repository}}"
           ref: "dev"
           token: ${{ secrets.my_pat }}
+
       - name: Set variable
         run: |-
-          APP_PATH=$(echo "${{ inputs.imagename }}" | cut -d':' -f2)
+          APP_PATH=$(echo "${{ inputs.imagename }}" | cut -d':' -f1)
           echo "APP_PATH=$APP_PATH" >> $GITHUB_ENV
           echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV;
 
