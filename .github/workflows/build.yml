@@ -71,7 +71,7 @@ jobs:
       - name: Kaniko build
         uses: aevea/action-kaniko@master
         with:
-          image: ${{ secrets.repository }}
+          image: nuttapornk/app1-webui 
           tag: ${{ env.TAG }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
