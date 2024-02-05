@@ -70,7 +70,7 @@ jobs:
           cd src/microservices/onprem/${{ env.APP_PATH }}/${{ env.DIR }}
           echo "kustomize update src/microservices/onprem/${{ env.APP_PATH }}/${{ env.DIR }}"          
           kustomize edit set image ${{ inputs.imagename }}
-          cat kustomization.yaml
+          cat kustomization.yml
 
       - name: Push update manifest to deployment repo
         run: |
