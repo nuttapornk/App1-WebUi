@@ -5,6 +5,8 @@ on:
     branches:
       - dev
       - uat
+      - preprod
+      - main
 permissions:
   contents: write
   packages: write
