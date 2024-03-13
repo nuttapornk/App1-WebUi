@@ -32,7 +32,7 @@ jobs:
           echo "REPOSITORY=$LOWER_CASE_REPO_NAME" >> $GITHUB_ENV;
       
       - name: Set version
-        if: github.ref == 'refs/heads/main'    
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'    
         uses: paulhatch/semantic-version@v4.0.2
         id: versioning
         with:
@@ -42,7 +42,7 @@ jobs:
           format: "${major}.${minor}.${patch}"
             
       - name: Create Release main
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -52,18 +52,18 @@ jobs:
           release_name: v${{ steps.versioning.outputs.version }}
             
       - name: Output Step                             
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         env:
           NEW_TAG: v${{ steps.versioning.outputs.version }}
         run: echo "new tag&Release $NEW_TAG"
         
       - name: Set Tag
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         run: |
             echo v${{ steps.versioning.outputs.version }}
             echo "TAG=$(echo v${{ steps.versioning.outputs.version }} | cut -c 1-7)" >> $GITHUB_ENV;
 
-      - if: github.ref != 'refs/heads/main'
+      - if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main'
         run: echo "TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV;
 
       - if: env.TAG == 'v'
