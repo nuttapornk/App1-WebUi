@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - uat
 permissions:
   contents: write
   packages: write
